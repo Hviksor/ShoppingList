@@ -1,12 +1,16 @@
 *.iml
 .gradle
 /local.properties
+<<<<<<< HEAD
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+=======
+/.idea
+>>>>>>> 0ddb5d5 (Master)
 .DS_Store
 /build
 /captures
