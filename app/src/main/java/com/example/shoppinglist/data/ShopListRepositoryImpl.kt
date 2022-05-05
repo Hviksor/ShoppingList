@@ -8,7 +8,7 @@ import java.lang.RuntimeException
 import kotlin.random.Random
 
 object ShopListRepositoryImpl : ShopListRepository {
-    private val shopList = mutableListOf<ShopItem>()
+    private val shopList = sortedSetOf<ShopItem>({ a1, a2 -> a1.id.compareTo(a2.id) })
     private val shopListLD = MutableLiveData<List<ShopItem>>()
     private var idAutoincrement = 0
 

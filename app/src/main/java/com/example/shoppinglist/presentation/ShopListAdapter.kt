@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
@@ -14,18 +15,22 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>
     var shopList = listOf<ShopItem>()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
+            val diffCallback = DiffUtilShopItem(shopList, value)
+            val diffResult = DiffUtil.calculateDiff(diffCallback)
+            diffResult.dispatchUpdatesTo(this)
             field = value
-            notifyDataSetChanged()
         }
+    var onShopItemLongClick: ((ShopItem) -> Unit)? = null
+    var onShopItemClick: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopListViewHolder {
-        val layuot = when (viewType) {
+        val layout = when (viewType) {
             LAYOUT_ENABLED -> R.layout.item_shop_enabled
             LAYOUT_DISABLED -> R.layout.item_shop_disabled
             else -> throw RuntimeException("Неизвестный ViewType: $viewType")
         }
 
-        val view = LayoutInflater.from(parent.context).inflate(layuot, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
         return ShopListViewHolder(view)
     }
 
@@ -33,6 +38,13 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>
         val item = shopList[position]
         holder.name.text = item.name
         holder.count.text = item.count.toString()
+        holder.itemView.setOnLongClickListener {
+            onShopItemLongClick?.invoke(item)
+            true
+        }
+        holder.itemView.setOnClickListener {
+            onShopItemClick?.invoke(item)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -46,7 +58,6 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>
         } else {
             LAYOUT_DISABLED
         }
-
     }
 
     class ShopListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
