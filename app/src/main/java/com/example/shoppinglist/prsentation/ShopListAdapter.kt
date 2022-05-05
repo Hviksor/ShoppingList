@@ -1,6 +1,7 @@
 package com.example.shoppinglist.prsentation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
+    var count = 0
     var shopList = listOf<ShopItem>()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
@@ -39,6 +41,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         holder: ShopItemViewHolder,
         position: Int
     ) {
+        Log.e("onBindViewHolder", "onBindViewHolder, count ${++count}")
         val shopItem = shopList[position]
         holder.tvName.text = shopItem.name
         holder.tvCount.text = shopItem.count.toString()

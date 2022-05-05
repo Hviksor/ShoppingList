@@ -1,11 +1,14 @@
 package com.example.shoppinglist.prsentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.shoppinglist.R
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
@@ -34,12 +37,45 @@ class MainActivity : AppCompatActivity() {
             ShopListAdapter.MAX_RECYCLER_ITEM
         )
 
+        setupClickListener()
+        setupLongClickListener()
+        setupSwipeListener(rvShopList)
+
+    }
+
+    private fun setupSwipeListener(rvShopList: RecyclerView) {
+        val callBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: ViewHolder,
+                target: ViewHolder
+            ): Boolean {
+                return false
+            }
+            override fun onSwiped(
+                viewHolder: ViewHolder,
+                direction: Int
+            ) {
+                val item = shopItemAdapter.shopList[viewHolder.adapterPosition]
+                viewModel.deleteShopItem(item)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(callBack)
+        itemTouchHelper.attachToRecyclerView(rvShopList)
+    }
+
+    private fun setupClickListener() {
+
+        shopItemAdapter.onShopClick = {
+            Log.e("MainActivity", "$it")
+        }
+    }
+
+    private fun setupLongClickListener() {
         shopItemAdapter.onShopItemOnLongClick = {
             viewModel.changeEnableState(it)
         }
-        shopItemAdapter.onShopClick = {
-            Log.e("test","$it")
-        }
-
     }
+
+
 }
