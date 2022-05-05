@@ -26,6 +26,6 @@ class MainActivity : AppCompatActivity() {
         adapter = ShopListAdapter()
         rcview = findViewById(R.id.rv_shop_list)
         rcview.adapter = adapter
-
     }
+
 }
