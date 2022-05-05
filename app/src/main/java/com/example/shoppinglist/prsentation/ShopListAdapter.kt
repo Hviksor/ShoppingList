@@ -33,6 +33,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     var onShopItemOnLongClick: ((ShopItem) -> Unit)? = null
+    var onShopClick: ((ShopItem) -> Unit)? = null
 
     override fun onBindViewHolder(
         holder: ShopItemViewHolder,
@@ -44,6 +45,10 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         holder.itemView.setOnLongClickListener {
             onShopItemOnLongClick?.invoke(shopItem)
             true
+        }
+        holder.itemView.setOnClickListener {
+            onShopClick?.invoke(shopItem)
+
         }
     }
 
