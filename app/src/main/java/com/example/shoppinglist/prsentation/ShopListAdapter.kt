@@ -1,5 +1,6 @@
 package com.example.shoppinglist.prsentation
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,15 +9,14 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
-import java.lang.RuntimeException
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
     var shopList = listOf<ShopItem>()
+        @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
             notifyDataSetChanged()
         }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         val layout = when (viewType) {
@@ -32,20 +32,25 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         return ShopItemViewHolder(view)
     }
 
+    var onShopItemOnLongClick: ((ShopItem) -> Unit)? = null
+
     override fun onBindViewHolder(
         holder: ShopItemViewHolder,
         position: Int
     ) {
         val shopItem = shopList[position]
-        holder.tvName.text = "${shopItem.name} "
+        holder.tvName.text = shopItem.name
         holder.tvCount.text = shopItem.count.toString()
-        holder.itemView.setOnClickListener {
+        holder.itemView.setOnLongClickListener {
+            onShopItemOnLongClick?.invoke(shopItem)
             true
         }
     }
+
     override fun getItemCount(): Int {
         return shopList.size
     }
+
     override fun getItemViewType(position: Int): Int {
         val item = shopList[position]
         return if (item.enabled) {
@@ -63,6 +68,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     companion object {
         const val LAYOUT_ENABLED = 1
         const val LAYOUT_DISABLED = 0
+
+        const val MAX_RECYCLER_ITEM = 15
 
     }
 }
