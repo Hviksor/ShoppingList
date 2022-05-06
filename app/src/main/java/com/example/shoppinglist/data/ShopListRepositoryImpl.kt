@@ -1,15 +1,18 @@
 package com.example.shoppinglist.data
 
+import androidx.lifecycle.LiveData
 import com.example.shoppinglist.domain.ShopItem
 import com.example.shoppinglist.domain.ShopListRepository
 import java.lang.RuntimeException
 
-class ShopListRepositoryImpl : ShopListRepository {
+object  ShopListRepositoryImpl : ShopListRepository {
     private val shopList = mutableListOf<ShopItem>()
+    private val shopListLD = mutableListOf<ShopItem>()
+
     private var autoIncrementId = 0
 
 
-    override fun getShopItemListUseCase(): List<ShopItem> {
+    override fun getShopItemListUseCase(): LiveData<List<ShopItem>> {
         return shopList.toList()
     }
 
