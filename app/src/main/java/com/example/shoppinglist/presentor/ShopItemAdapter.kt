@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
@@ -13,10 +14,11 @@ import java.lang.RuntimeException
 
 class ShopItemAdapter : RecyclerView.Adapter<ShopItemAdapter.ShopItemViewHolder>() {
     var shopList = listOf<ShopItem>()
-        @SuppressLint("NotifyDataSetChanged")
         set(value) {
+            val callback = DiffUtillll(shopList, value)
+            val diffResult = DiffUtil.calculateDiff(callback)
+            diffResult.dispatchUpdatesTo(this)
             field = value
-            notifyDataSetChanged()
         }
     var shopItemLongClick: ((ShopItem) -> Unit)? = null
     var shopItemClick: ((ShopItem) -> Unit)? = null
