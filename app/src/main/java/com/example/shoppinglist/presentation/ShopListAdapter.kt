@@ -1,25 +1,13 @@
 package com.example.shoppinglist.presentation
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
-import java.lang.RuntimeException
 
-class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>() {
-    var shopList = listOf<ShopItem>()
-        @SuppressLint("NotifyDataSetChanged")
-        set(value) {
-            val diffCallback = DiffUtilShopItem(shopList, value)
-            val diffResult = DiffUtil.calculateDiff(diffCallback)
-            diffResult.dispatchUpdatesTo(this)
-            field = value
-        }
+class ShopListAdapter : ListAdapter<ShopItem,ShopListViewHolder>(ShopItemDiffUtil()) {
+
     var onShopItemLongClick: ((ShopItem) -> Unit)? = null
     var onShopItemClick: ((ShopItem) -> Unit)? = null
 
@@ -35,7 +23,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>
     }
 
     override fun onBindViewHolder(holder: ShopListViewHolder, position: Int) {
-        val item = shopList[position]
+        val item = getItem(position)
         holder.name.text = item.name
         holder.count.text = item.count.toString()
         holder.itemView.setOnLongClickListener {
@@ -47,22 +35,14 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>
         }
     }
 
-    override fun getItemCount(): Int {
-        return shopList.size
-    }
 
     override fun getItemViewType(position: Int): Int {
-        val item = shopList[position]
+        val item = getItem(position)
         return if (item.enabled) {
             LAYOUT_ENABLED
         } else {
             LAYOUT_DISABLED
         }
-    }
-
-    class ShopListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val name = itemView.findViewById<TextView>(R.id.tv_name)
-        val count = itemView.findViewById<TextView>(R.id.tv_count)
     }
 
     companion object {
