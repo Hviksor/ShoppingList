@@ -8,8 +8,8 @@ import com.example.shoppinglist.domain.ShopItem
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffUtil()) {
 
-    val onShopItemClick: ((ShopItem) -> Unit)? = null
-    val onShopItemLongClick: ((ShopItem) -> Unit)? = null
+    var onShopItemClick: ((ShopItem) -> Unit)? = null
+    var onShopItemLongClick: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         val layout = when (viewType) {
@@ -49,5 +49,6 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffUt
     companion object {
         const val ENABLED_VIEW = 1
         const val DISABLED_VIEW = 0
+        const val MAX_POOL_SIZE = 15
     }
 }
