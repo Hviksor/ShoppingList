@@ -50,15 +50,17 @@ class ShopItemViewModel : ViewModel() {
     }
 
 
-
     fun addShopItem(inputName: String?, inputCount: String?) {
         val name = parsName(inputName)
         val count = parsCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-            val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            finishWork()
+            _shopItem.value?.let {
+                val item = it.copy(name = name, count = count)
+                addShopItemUseCase.addShopItem(item)
+                finishWork()
+            }
+
         }
 
     }
