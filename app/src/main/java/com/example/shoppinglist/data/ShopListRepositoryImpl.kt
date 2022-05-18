@@ -14,7 +14,7 @@ object ShopListRepositoryImpl : ShopListRepository {
     private var autoIncrementId = 0
 
     init {
-        for (i in 0 until 100) {
+        for (i in 0 until 8) {
             addShopItem(ShopItem("Name $i", 1, Random.nextBoolean()))
 
 
