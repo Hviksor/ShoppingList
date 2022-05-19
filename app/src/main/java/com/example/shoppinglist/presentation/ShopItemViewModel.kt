@@ -7,10 +7,10 @@ import com.example.shoppinglist.data.ShopListRepositoryImpl
 import com.example.shoppinglist.domain.*
 
 class ShopItemViewModel : ViewModel() {
-    val repo = ShopListRepositoryImpl
-    val getShopItemUseCase = GetShopItemUseCase(repo)
-    val addShopItemUseCase = AddShopItemUseCase(repo)
-    val editShopItemUseCase = EditShopItemUseCase(repo)
+    private val repo = ShopListRepositoryImpl
+    private val getShopItemUseCase = GetShopItemUseCase(repo)
+    private val addShopItemUseCase = AddShopItemUseCase(repo)
+    private val editShopItemUseCase = EditShopItemUseCase(repo)
 
     private val _shopItem = MutableLiveData<ShopItem>()
     val shopItem: LiveData<ShopItem>
@@ -41,6 +41,7 @@ class ShopItemViewModel : ViewModel() {
         if (fieldsValid) {
             val shopItem = ShopItem(name, count, true)
             addShopItemUseCase.addShopItem(shopItem)
+            finishWork()
         }
     }
 
@@ -52,6 +53,8 @@ class ShopItemViewModel : ViewModel() {
             _shopItem.value?.let {
                 val item = it.copy(name = name, count = count)
                 editShopItemUseCase.editShopItem(item)
+
+                finishWork()
             }
         }
     }
@@ -88,6 +91,7 @@ class ShopItemViewModel : ViewModel() {
     fun resetErrorCount() {
         _errorCount.value = false
     }
+
     fun finishWork() {
         _isCloseScreen.value = Unit
     }
