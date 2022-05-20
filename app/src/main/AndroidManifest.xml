@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
         <activity
-            android:name=".ShopItemActivity"
+            android:name=".presentor.ShopItemActivity"
             android:exported="false" />
         <activity
             android:name=".presentor.MainActivity"
