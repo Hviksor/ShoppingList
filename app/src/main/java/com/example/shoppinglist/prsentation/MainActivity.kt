@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         }
         val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
         buttonAddItem.setOnClickListener {
-            val intent = ShopItemActivity.newIntentAddItem(this)
+            val intent = ShopItemActivity.getAddIntent(this)
             startActivity(intent)
         }
     }
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 
         shopItemAdapter.onShopClick = {
 
-            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            val intent = ShopItemActivity.getEditIntent(this, it.id)
             startActivity(intent)
         }
     }
