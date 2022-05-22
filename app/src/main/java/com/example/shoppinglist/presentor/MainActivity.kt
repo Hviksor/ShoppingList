@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.presentor.ShopListAdapter.Companion.ENABLED_VIEW
 import com.example.shoppinglist.presentor.ShopListAdapter.Companion.MAX_POOL_SIZE
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
     lateinit var viewModel: MainViewModel
     lateinit var rcView: RecyclerView
     lateinit var shopListAdapter: ShopListAdapter
+    lateinit var addButton: FloatingActionButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRcView() {
         rcView = findViewById(R.id.rv_shop_list)
+        addButton = findViewById(R.id.button_add_shop_item)
         shopListAdapter = ShopListAdapter()
         rcView.adapter = shopListAdapter
         rcView.recycledViewPool.setMaxRecycledViews(ENABLED_VIEW, MAX_POOL_SIZE)
@@ -35,19 +38,22 @@ class MainActivity : AppCompatActivity() {
         setupClickListener()
         setUpLongClick()
         setupSwipeListener()
+        addButton.setOnClickListener {
+            val intent = ShopItemActivity.getAddIntent(this)
+            startActivity(intent)
+        }
     }
 
     private fun setUpLongClick() {
         shopListAdapter.onShopItemLongClick = {
-
             viewModel.changeShopItem(it)
         }
     }
 
     private fun setupClickListener() {
         shopListAdapter.onShopItemClick = {
-            Toast.makeText(this, "позиция ${it.id}", Toast.LENGTH_SHORT).show()
-
+            val intent = ShopItemActivity.getEditIntent(this, it.id)
+            startActivity(intent)
         }
     }
 
