@@ -2,53 +2,59 @@ package com.example.shoppinglist.prsentation
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import androidx.core.text.set
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ActivityShopItemBinding
+import com.example.shoppinglist.databinding.FragmentShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
-import com.google.android.material.textfield.TextInputLayout
 
-class ShopItemActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityShopItemBinding
+class ShopItemFragment : Fragment() {
+    private lateinit var binding: FragmentShopItemBinding
     private lateinit var viewModel: ShopItemViewModel
-    private var screenMode = UNKNOWN_MODE
+    private var screenMode = ShopItemActivity.UNKNOWN_MODE
     private var shopItemId = ShopItem.DEFAULT_ID
+    fun newInstanceAddItem(): ShopItemFragment {
+        return ShopItemFragment(ADD_MODE)
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityShopItemBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentShopItemBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         parseIntent()
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         selectScreenMode()
         addChangeTextListener()
         addViewModelFields()
-
-
-
     }
 
     private fun addViewModelFields() = with(binding) {
-        viewModel.errorInputCount.observe(this@ShopItemActivity) {
+        viewModel.errorInputCount.observe(viewLifecycleOwner) {
             if (it) {
                 tillCount.error = "Error"
             }
         }
-        viewModel.errorInputName.observe(this@ShopItemActivity) {
+        viewModel.errorInputName.observe(viewLifecycleOwner) {
             if (it) {
                 tillName.error = "Error"
             }
         }
-        viewModel.isCloseScreen.observe(this@ShopItemActivity) {
-            finish()
+        viewModel.isCloseScreen.observe(viewLifecycleOwner) {
+            activity?.onBackPressed()
         }
 
     }
@@ -85,13 +91,11 @@ class ShopItemActivity : AppCompatActivity() {
             EDIT_MODE -> launchModeEdit()
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
-        supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container,)
     }
 
     private fun launchModeEdit() = with(binding) {
         viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(this@ShopItemActivity) {
+        viewModel.shopItem.observe(viewLifecycleOwner) {
             edName.setText(it.name)
             edCount.setText(it.count.toString())
         }
