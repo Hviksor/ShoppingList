@@ -27,84 +27,19 @@ class ShopItemActivity : AppCompatActivity() {
         binding = ActivityShopItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
         parseIntent()
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         selectScreenMode()
-        addChangeTextListener()
-        addViewModelFields()
-
-
-
     }
-
-    private fun addViewModelFields() = with(binding) {
-        viewModel.errorInputCount.observe(this@ShopItemActivity) {
-            if (it) {
-                tillCount.error = "Error"
-            }
-        }
-        viewModel.errorInputName.observe(this@ShopItemActivity) {
-            if (it) {
-                tillName.error = "Error"
-            }
-        }
-        viewModel.isCloseScreen.observe(this@ShopItemActivity) {
-            finish()
-        }
-
-    }
-
-    private fun addChangeTextListener() = with(binding) {
-
-        edName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                tillName.error = null
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-        edCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                tillCount.error = null
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-    }
-
     private fun selectScreenMode() {
-        when (screenMode) {
-            ADD_MODE -> launchModeAdd()
-            EDIT_MODE -> launchModeEdit()
+        Log.e("screenMode", screenMode)
+        val fragment = when (screenMode) {
+            ADD_MODE -> ShopItemFragment.newInstanceAddItem()
+            EDIT_MODE -> ShopItemFragment.newInstanceEditItem(shopItemId)
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
+
         supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container,)
-    }
-
-    private fun launchModeEdit() = with(binding) {
-        viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(this@ShopItemActivity) {
-            edName.setText(it.name)
-            edCount.setText(it.count.toString())
-        }
-        button.setOnClickListener {
-            viewModel.editShopItem(edName.text.toString(), edCount.text.toString())
-        }
-    }
-
-    private fun launchModeAdd() = with(binding) {
-        button.setOnClickListener {
-            viewModel.addShopItem(edName.text.toString(), edName.text.toString())
-        }
-
+            .add(R.id.shop_item_container, fragment)
+            .commit()
     }
 
 
@@ -117,6 +52,7 @@ class ShopItemActivity : AppCompatActivity() {
             throw RuntimeException("Unknown screen mode $mode")
         }
         screenMode = mode
+
         if (mode == EDIT_MODE) {
             if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
                 throw RuntimeException("SHOP_ITEM_ID mode is absent")

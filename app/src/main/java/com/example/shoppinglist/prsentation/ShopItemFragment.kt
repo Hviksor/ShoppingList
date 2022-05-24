@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +20,7 @@ class ShopItemFragment(
 ) : Fragment() {
     private lateinit var binding: FragmentShopItemBinding
     private lateinit var viewModel: ShopItemViewModel
-    fun newInstanceAddItem(): ShopItemFragment {
-        return ShopItemFragment(ADD_MODE)
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +65,7 @@ class ShopItemFragment(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 tillName.error = null
+                viewModel.resetErrorInputName()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -77,6 +77,7 @@ class ShopItemFragment(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 tillCount.error = null
+                viewModel.resetErrorInputCount()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -105,7 +106,7 @@ class ShopItemFragment(
 
     private fun launchModeAdd() = with(binding) {
         button.setOnClickListener {
-            viewModel.addShopItem(edName.text.toString(), edName.text.toString())
+            viewModel.addShopItem(edName.text.toString(), edCount.text.toString())
         }
 
     }
@@ -122,23 +123,17 @@ class ShopItemFragment(
 
 
     companion object {
-        private const val EXTRA_SCREEN_MODE = "extra_screen_mode"
-        private const val EXTRA_SHOP_ITEM_ID = "extra_shop_item_id"
         private const val ADD_MODE = "add_mode"
         private const val EDIT_MODE = "edit_mode"
         private const val UNKNOWN_MODE = "unknown_mode"
 
-        fun getAddIntent(context: Context): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, ADD_MODE)
-            return intent
+
+        fun newInstanceAddItem(): ShopItemFragment {
+            return ShopItemFragment(ADD_MODE)
         }
 
-        fun getEditIntent(context: Context, shopItemId: Int): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, EDIT_MODE)
-            intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
-            return intent
+        fun newInstanceEditItem(shopItemId: Int): ShopItemFragment {
+            return ShopItemFragment(EDIT_MODE, shopItemId)
         }
 
 
