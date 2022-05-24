@@ -10,16 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.shoppinglist.R
-import com.example.shoppinglist.databinding.ActivityShopItemBinding
 import com.example.shoppinglist.databinding.FragmentShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
 
-class ShopItemFragment : Fragment() {
+class ShopItemFragment(
+    private val screenMode: String = UNKNOWN_MODE,
+    private val shopItemId: Int = ShopItem.DEFAULT_ID
+) : Fragment() {
     private lateinit var binding: FragmentShopItemBinding
     private lateinit var viewModel: ShopItemViewModel
-    private var screenMode = ShopItemActivity.UNKNOWN_MODE
-    private var shopItemId = ShopItem.DEFAULT_ID
     fun newInstanceAddItem(): ShopItemFragment {
         return ShopItemFragment(ADD_MODE)
     }
@@ -28,14 +27,14 @@ class ShopItemFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentShopItemBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parseIntent()
+        parseParams()
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         selectScreenMode()
         addChangeTextListener()
@@ -112,22 +111,13 @@ class ShopItemFragment : Fragment() {
     }
 
 
-    private fun parseIntent() {
-        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
-            throw RuntimeException("Screen mode is absent")
+    private fun parseParams() {
+        if (screenMode != EDIT_MODE && screenMode != ADD_MODE) {
+            throw RuntimeException("Unknown screen mode $screenMode")
         }
-        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
-        if (mode != ADD_MODE && mode != EDIT_MODE) {
-            throw RuntimeException("Unknown screen mode $mode")
+        if (screenMode == EDIT_MODE && shopItemId == ShopItem.DEFAULT_ID) {
+            throw RuntimeException("SHOP_ITEM_ID mode is absent")
         }
-        screenMode = mode
-        if (mode == EDIT_MODE) {
-            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
-                throw RuntimeException("SHOP_ITEM_ID mode is absent")
-            }
-            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.DEFAULT_ID)
-        }
-
     }
 
 
