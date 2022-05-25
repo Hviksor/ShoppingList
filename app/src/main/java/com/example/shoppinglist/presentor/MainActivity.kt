@@ -2,14 +2,17 @@ package com.example.shoppinglist.presentor
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListener {
+    private var itemContainer: FragmentContainerView? = null
     private lateinit var viewModel: MainViewModel
     private lateinit var rcView: RecyclerView
     private lateinit var shopItemAdapter: ShopItemAdapter
@@ -19,14 +22,30 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         initViews()
+        itemContainer = findViewById(R.id.item_container)
         viewModel.shopList.observe(this) {
             shopItemAdapter.shopList = it
         }
         buttonAdd.setOnClickListener {
-            val intent = ShopItemActivity.getAddIntent(this)
-            startActivity(intent)
+            if (isOneLineViews()) {
+                val intent = ShopItemActivity.getAddIntent(this)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.getAddFragment())
+            }
+
         }
 
+    }
+
+    private fun isOneLineViews(): Boolean {
+        return (itemContainer == null)
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.item_container, fragment)
+            .commit()
     }
 
     private fun initViews() {
@@ -62,9 +81,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun shortClick() {
         shopItemAdapter.shopItemClick = {
-            Log.e("Main", "position: ${it.id}")
-            val intent = ShopItemActivity.getEditIntent(this, it.id)
-            startActivity(intent)
+            if (isOneLineViews()) {
+                val intent = ShopItemActivity.getEditIntent(this, it.id)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.getEditFragment(it.id))
+            }
         }
+
+    }
+
+    override fun onEditingFinish() {
+        Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
     }
 }
