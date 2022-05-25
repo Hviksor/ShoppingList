@@ -19,6 +19,7 @@ class ShopItemFragment() : Fragment() {
     private var shopItemId: Int = ShopItem.DEFAULT_ID
     private lateinit var binding: FragmentShopItemBinding
     private lateinit var viewModel: ShopItemViewModel
+    var onEditingFinishListener: OnEditingFinishedListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +51,7 @@ class ShopItemFragment() : Fragment() {
             }
         }
         viewModel.isCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onEditingFinishListener?.onEditingFinished()
         }
 
     }
@@ -127,6 +128,11 @@ class ShopItemFragment() : Fragment() {
             shopItemId = args.getInt(EXTRA_SHOP_ITEM_ID, ShopItem.DEFAULT_ID)
         }
     }
+
+    interface OnEditingFinishedListener {
+        fun onEditingFinished()
+    }
+
 
     companion object {
         private const val EXTRA_SCREEN_MODE = "extra_screen_mode"
