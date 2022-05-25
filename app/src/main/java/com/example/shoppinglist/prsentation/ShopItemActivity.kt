@@ -26,8 +26,12 @@ class ShopItemActivity : AppCompatActivity() {
         binding = ActivityShopItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
         parseIntent()
-        selectScreenMode()
+        if (savedInstanceState == null) {
+            selectScreenMode()
+        }
+
     }
+
     private fun selectScreenMode() {
         Log.e("screenMode", screenMode)
         val fragment = when (screenMode) {
@@ -37,7 +41,7 @@ class ShopItemActivity : AppCompatActivity() {
         }
 
         supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container, fragment)
+            .replace(R.id.shop_item_container, fragment)
             .commit()
     }
 
