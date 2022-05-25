@@ -1,5 +1,6 @@
 package com.example.shoppinglist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,16 +18,32 @@ class ShopItemFragment() : Fragment() {
     lateinit var viewModel: ShopItemViewModel
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.DEFAULT_ID
+    private lateinit var onEditingFinishListener: OnEditingFinishListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishListener) {
+            onEditingFinishListener = context
+        } else {
+            throw RuntimeException("Activity must implement OnEditingFinishListener")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parsParam()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = ShopItemFragmentBinding.inflate(layoutInflater, container, false)
         return binding.root
 
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
@@ -34,6 +51,7 @@ class ShopItemFragment() : Fragment() {
         addChangeTextListener()
         selectMod()
     }
+
     private fun addChangeTextListener() = with(binding) {
         etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -72,7 +90,7 @@ class ShopItemFragment() : Fragment() {
             }
         }
         viewModel.isCloseScreen.observe(viewLifecycleOwner) {
-            activity?.finish()
+            onEditingFinishListener.onEditingFinished()
         }
 
     }
@@ -96,6 +114,10 @@ class ShopItemFragment() : Fragment() {
 
         }
 
+    }
+
+    interface OnEditingFinishListener {
+        fun onEditingFinished()
     }
 
     private fun launchModeAdd() = with(binding) {

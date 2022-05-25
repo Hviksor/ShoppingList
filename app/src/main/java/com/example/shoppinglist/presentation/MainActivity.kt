@@ -3,32 +3,53 @@ package com.example.shoppinglist.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),ShopItemFragment.OnEditingFinishListener {
+    private var itemShopContainer: FragmentContainerView? = null
     private lateinit var viewModel: MainViewModel
     private lateinit var shopItemAdapter: ShopListAdapter
     private lateinit var rcview: RecyclerView
     private lateinit var buttonAdd: FloatingActionButton
 
-    //    private var count = 3
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initRCV()
+        itemShopContainer = findViewById(R.id.item_shop_container)
         buttonAdd = findViewById(R.id.button_add_shop_item)
         buttonAdd.setOnClickListener {
-            val intent = ShopItemActivity.getAddIntent(this)
-            startActivity(intent)
+            if (isViewsInOneLine()) {
+                val intent = ShopItemActivity.getAddIntent(this)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.getInstanceAddFragment())
+            }
+
         }
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopItemAdapter.submitList(it)
         }
+    }
+
+    private fun isViewsInOneLine(): Boolean {
+        return (itemShopContainer == null)
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.item_shop_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun initRCV() {
@@ -65,11 +86,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onShopItemClick() {
+
         shopItemAdapter.onShopItemClick = {
-            Log.e("Main", it.toString())
-            val intent = ShopItemActivity.getEditIntent(this, it.id)
-            startActivity(intent)
+            if (isViewsInOneLine()) {
+                val intent = ShopItemActivity.getEditIntent(this, it.id)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.getInstanceEditFragment(it.id))
+            }
         }
+
+
+    }
+
+    override fun onEditingFinished() {
+        Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
     }
 
 }
