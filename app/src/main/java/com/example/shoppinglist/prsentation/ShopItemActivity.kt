@@ -18,7 +18,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity() {
     private lateinit var binding: ActivityShopItemBinding
-    private lateinit var viewModel: ShopItemViewModel
     private var screenMode = UNKNOWN_MODE
     private var shopItemId = ShopItem.DEFAULT_ID
 
