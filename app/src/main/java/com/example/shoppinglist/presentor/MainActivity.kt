@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
     private fun launchFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.item_container, fragment)
+            .addToBackStack(null)
             .commit()
     }
 

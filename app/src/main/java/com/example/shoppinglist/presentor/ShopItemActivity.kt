@@ -33,9 +33,7 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishLi
             EDIT_MODE -> ShopItemFragment.getEditFragment(shopItemId)
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
-        supportFragmentManager.popBackStack()
         supportFragmentManager.beginTransaction()
-            .addToBackStack(null)
             .replace(R.id.item_container, fragment)
             .commit()
     }
