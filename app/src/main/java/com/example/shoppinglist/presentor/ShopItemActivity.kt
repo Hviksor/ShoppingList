@@ -7,12 +7,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ActivityShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnFinishEditingListener {
     private var screenMode = UNKNOWN_MODE
-    private lateinit var viewModel: ShipItemViewModel
     private var shopItemId = ShopItem.ID_DEFAULT
     private lateinit var binding: ActivityShopItemBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,82 +20,18 @@ class ShopItemActivity : AppCompatActivity() {
         binding = ActivityShopItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
         parsIntent()
-        viewModel = ViewModelProvider(this)[ShipItemViewModel::class.java]
         selectScreenMode()
-        setTextChangeListener()
-        setViewModel()
-    }
-
-    private fun setViewModel() {
-        viewModel.errorCount.observe(this) {
-            if (it) {
-                binding.iLCount.error = "Error"
-            }
-        }
-        viewModel.errorName.observe(this) {
-            if (it) {
-                binding.iLName.error = "Error"
-            }
-        }
-        viewModel.shouldCloseScreen.observe(this) {
-            finish()
-        }
-    }
-
-    private fun setTextChangeListener() {
-        binding.eTName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.iLName.error = null
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-        binding.eTCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.iLCount.error = null
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
     }
 
     private fun selectScreenMode() {
-        when (screenMode) {
-            ADD_MODE -> launchAddMode()
-            EDIT_MODE -> launchEditMode()
+        val fragment = when (screenMode) {
+            ADD_MODE -> ShopItemFragment.getAddFragmentInstance()
+            EDIT_MODE -> ShopItemFragment.getEditFragmentInstance(shopItemId)
             else -> throw RuntimeException("Screen mode unknown")
         }
-    }
-
-    private fun launchEditMode() = with(binding) {
-        viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(this@ShopItemActivity) {
-            eTName.setText(it.name)
-            eTCount.setText(it.count.toString())
-        }
-        saveItem.setOnClickListener {
-            val name = eTName.text.toString()
-            val count = eTCount.text.toString()
-            viewModel.editShopItem(name, count)
-        }
-    }
-
-    private fun launchAddMode() = with(binding) {
-        saveItem.setOnClickListener {
-            val name = eTName.text.toString()
-            val count = eTCount.text.toString()
-            viewModel.addShopItem(name, count)
-        }
-
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.item_container, fragment)
+            .commit()
     }
 
     private fun parsIntent() {
@@ -134,5 +70,9 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
             return intent
         }
+    }
+
+    override fun onFinishEdit() {
+        finish()
     }
 }
