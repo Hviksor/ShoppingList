@@ -57,10 +57,13 @@ class ShopItemViewModel : ViewModel() {
         val parsCount = parseCount(count)
         val validField = validator(parsName, parsCount)
         if (validField) {
-            val item = ShopItem(parsName, parsCount, true)
-            editShopItemUseCase.editShopItem(item)
+            shopItem.value?.let {
+                val item = it.copy(name = parsName, count = parsCount)
+                editShopItemUseCase.editShopItem(item)
+            }
+            shouldCloseScreen()
         }
-        shouldCloseScreen()
+
     }
 
     private fun validator(parsName: String, parsCount: Int): Boolean {

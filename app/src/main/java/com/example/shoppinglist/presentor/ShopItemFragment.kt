@@ -16,10 +16,20 @@ import com.example.shoppinglist.domain.ShopItem
 
 
 class ShopItemFragment : Fragment() {
+    private lateinit var onFinishEditingListener: OnFinishEditingListener
     private var shopItemId = ShopItem.DEFAULT_ID
     private var screenMode = UNKNOWN_MODE
     lateinit var viewModel: ShopItemViewModel
     private lateinit var binding: FragmentShopItemBinding
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFinishEditingListener) {
+            onFinishEditingListener = context
+        } else {
+            throw RuntimeException("")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +54,7 @@ class ShopItemFragment : Fragment() {
 
     private fun setupViewModelFields() {
         viewModel.finishWork.observe(viewLifecycleOwner) {
-
+            onFinishEditingListener.finishEditing()
         }
         viewModel.errorName.observe(viewLifecycleOwner) {
             if (it) {
@@ -84,6 +94,7 @@ class ShopItemFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {
 
+
             }
         })
     }
@@ -98,10 +109,11 @@ class ShopItemFragment : Fragment() {
 
     private fun launchEditMode() {
         viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(viewLifecycleOwner) {
+        viewModel.shopItem.value?.let {
             binding.tvName.setText(it.name)
             binding.tvCount.setText(it.count.toString())
         }
+
         binding.saveButton.setOnClickListener {
             val name = binding.tvName.text.toString()
             val count = binding.tvCount.text.toString()
@@ -130,6 +142,12 @@ class ShopItemFragment : Fragment() {
             }
             shopItemId = args.getInt(EXTRA_SHOP_ITEM_ID, ShopItem.DEFAULT_ID)
         }
+
+    }
+
+    interface OnFinishEditingListener {
+        fun finishEditing()
+
 
     }
 

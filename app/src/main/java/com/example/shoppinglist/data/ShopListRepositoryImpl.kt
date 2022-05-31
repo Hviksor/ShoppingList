@@ -1,5 +1,6 @@
 package com.example.shoppinglist.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.shoppinglist.domain.ShopItem
@@ -20,7 +21,8 @@ object ShopListRepositoryImpl : ShopListRepository {
 
 
     override fun getShopItem(shopItemId: Int): ShopItem {
-        return  shopList.find { it.id == shopItemId }?: throw RuntimeException("kokok")
+        Log.e("shopItemId", shopItemId.toString())
+        return shopList.find { it.id == shopItemId } ?: throw RuntimeException("kokok")
 
     }
 

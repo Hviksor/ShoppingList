@@ -3,6 +3,8 @@ package com.example.shoppinglist.presentor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -12,8 +14,9 @@ import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnFinishEditingListener {
     private lateinit var shopListAdapter: ShopListAdapter
+    private var fragmentContainer: FragmentContainerView? = null
     private lateinit var rcView: RecyclerView
     private lateinit var binding: ActivityMainBinding
     private lateinit var addButton: FloatingActionButton
@@ -27,12 +30,30 @@ class MainActivity : AppCompatActivity() {
             shopListAdapter.submitList(it)
         }
         addButton.setOnClickListener {
-            val intent = ShopItemActivity.getAddIntent(this)
-            startActivity(intent)
+            if (!isOneLineViews()) {
+                val intent = ShopItemActivity.getAddIntent(this)
+                startActivity(intent)
+            } else {
+                setUpFragment(ShopItemFragment.getAddInstance())
+
+            }
+
         }
         setupOnClickListener()
         setupOnLongClickListener()
         setupOnSwipeListener()
+    }
+
+    fun setUpFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+
+    }
+
+    private fun isOneLineViews(): Boolean {
+        return fragmentContainer != null
     }
 
     private fun initViews() {
@@ -42,13 +63,21 @@ class MainActivity : AppCompatActivity() {
         addButton = binding.btAddItem
         shopListAdapter = ShopListAdapter()
         rcView.adapter = shopListAdapter
+        fragmentContainer = findViewById(R.id.fragment_container)
 
     }
 
     private fun setupOnClickListener() {
         shopListAdapter.shopItemClick = {
-            val intent = ShopItemActivity.getEditIntent(this,it.id)
-            startActivity(intent)
+
+
+            if (!isOneLineViews()) {
+                val intent = ShopItemActivity.getEditIntent(this, it.id)
+                startActivity(intent)
+            } else {
+                setUpFragment(ShopItemFragment.getEditInstance(it.id))
+
+            }
         }
     }
 
@@ -77,6 +106,10 @@ class MainActivity : AppCompatActivity() {
         val touchHelper = ItemTouchHelper(calback)
         touchHelper.attachToRecyclerView(rcView)
 
+    }
+
+    override fun finishEditing() {
+        supportFragmentManager.popBackStack()
     }
 
 

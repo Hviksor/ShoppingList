@@ -8,7 +8,7 @@ import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ActivityShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnFinishEditingListener {
     private var shopItemId = ShopItem.DEFAULT_ID
     private var screenMode = UNKNOWN_MODE
 
@@ -70,5 +70,9 @@ class ShopItemActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun finishEditing() {
+        finish()
     }
 }
