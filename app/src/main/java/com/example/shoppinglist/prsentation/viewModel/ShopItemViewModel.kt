@@ -1,14 +1,14 @@
-package com.example.shoppinglist.prsentation
+package com.example.shoppinglist.prsentation.viewModel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglist.data.ShopListRepositoryImpl
-import com.example.shoppinglist.domain.AddShopItemUseCase
-import com.example.shoppinglist.domain.EditShopItemUseCase
-import com.example.shoppinglist.domain.GetShopItemUseCase
-import com.example.shoppinglist.domain.ShopItem
+import com.example.shoppinglist.domain.useCase.AddShopItemUseCase
+import com.example.shoppinglist.domain.useCase.EditShopItemUseCase
+import com.example.shoppinglist.domain.useCase.GetShopItemUseCase
+import com.example.shoppinglist.domain.model.ShopItem
 
 class ShopItemViewModel : ViewModel() {
     private val repo = ShopListRepositoryImpl
@@ -52,7 +52,6 @@ class ShopItemViewModel : ViewModel() {
         }
     }
 
-
     fun addShopItem(inputName: String?, inputCount: String?) {
         val name = parsName(inputName)
         val count = parsCount(inputCount)
@@ -63,7 +62,6 @@ class ShopItemViewModel : ViewModel() {
             addShopItemUseCase.addShopItem(shopItem)
             finishWork()
         }
-
     }
 
     private fun parsName(inputName: String?): String {

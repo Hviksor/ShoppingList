@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
+    <data>
+
+        <variable
+            name="shopItemViewModel"
+            type="com.example.shoppinglist.prsentation.viewModel.ShopItemViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".prsentation.ShopItemFragment">
+        tools:context=".prsentation.screens.ShopItemFragment">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/till_name"
@@ -14,6 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            app:errorInput="@{shopItemViewModel.errorInputName}"
             app:layout_constraintBottom_toTopOf="@+id/till_count"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -24,8 +32,9 @@
                 android:id="@+id/ed_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Name:"
-                android:inputType="textCapWords" />
+                android:hint="@string/Name"
+                android:inputType="textCapWords"
+                android:text="@{shopItemViewModel.shopItem.name}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -36,6 +45,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
+            app:errorInput="@{shopItemViewModel.errorInputCount}"
             app:layout_constraintBottom_toTopOf="@+id/button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,8 +56,9 @@
                 android:id="@+id/ed_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Count:"
-                android:inputType="number" />
+                android:hint="@string/Count"
+                android:inputType="number"
+                app:numberToString="@{shopItemViewModel.shopItem.count}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -55,7 +66,7 @@
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save"
+            android:text="@string/Save"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

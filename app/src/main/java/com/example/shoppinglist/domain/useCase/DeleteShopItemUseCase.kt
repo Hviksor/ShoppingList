@@ -1,4 +1,7 @@
-package com.example.shoppinglist.domain
+package com.example.shoppinglist.domain.useCase
+
+import com.example.shoppinglist.domain.model.ShopItem
+import com.example.shoppinglist.domain.ShopListRepository
 
 class DeleteShopItemUseCase(private val shopListRepository: ShopListRepository) {
     fun deleteShopItem(shopItem: ShopItem) {

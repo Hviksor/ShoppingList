@@ -1,6 +1,7 @@
 package com.example.shoppinglist.domain
 
 import androidx.lifecycle.LiveData
+import com.example.shoppinglist.domain.model.ShopItem
 
 interface ShopListRepository {
     fun getShopItemList(): LiveData<List<ShopItem>>
