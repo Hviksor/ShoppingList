@@ -1,25 +1,21 @@
 package com.example.shoppinglist.presentor
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
+import com.example.shoppinglist.databinding.ItemShopDisabledBinding
+import com.example.shoppinglist.databinding.ItemShopEnabledBinding
+import com.example.shoppinglist.databinding.ItemShopEnabledBindingImpl
 import com.example.shoppinglist.domain.ShopItem
-import org.w3c.dom.Text
 import java.lang.RuntimeException
 
-class ShopItemAdapter : RecyclerView.Adapter<ShopItemAdapter.ShopItemViewHolder>() {
-    var shopList = listOf<ShopItem>()
-        set(value) {
-            val callback = DiffUtillll(shopList, value)
-            val diffResult = DiffUtil.calculateDiff(callback)
-            diffResult.dispatchUpdatesTo(this)
-            field = value
-        }
+class ShopItemAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(DiffUtillll()) {
+
     var shopItemLongClick: ((ShopItem) -> Unit)? = null
     var shopItemClick: ((ShopItem) -> Unit)? = null
 
@@ -30,26 +26,42 @@ class ShopItemAdapter : RecyclerView.Adapter<ShopItemAdapter.ShopItemViewHolder>
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
             else -> throw RuntimeException("kokoko")
         }
-        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-        return ShopItemViewHolder(view)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layout,
+            parent,
+            false
+        )
+//        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
+        return ShopItemViewHolder(binding)
 
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
-        val shopItem = shopList[position]
-        holder.name.text = shopItem.name
-        holder.count.text = shopItem.count.toString()
-        holder.itemView.setOnLongClickListener {
+        val shopItem = getItem(position)
+        val binding = holder.binding
+        when (binding) {
+            is ItemShopEnabledBinding -> {
+                binding.tvCount.text = shopItem.count.toString()
+                binding.tvName.text = shopItem.name
+            }
+            is ItemShopDisabledBinding -> {
+                binding.tvCount.text = shopItem.count.toString()
+                binding.tvName.text = shopItem.name
+            }
+        }
+
+        binding.root.setOnLongClickListener {
             shopItemLongClick?.invoke(shopItem)
             true
         }
-        holder.itemView.setOnClickListener {
+        binding.root.setOnClickListener {
             shopItemClick?.invoke(shopItem)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (shopList[position].enabled) {
+        return if (getItem(position).enabled) {
             VIEW_TYPE_ENABLED
         } else {
             VIEW_TYPE_DISABLED
@@ -57,13 +69,9 @@ class ShopItemAdapter : RecyclerView.Adapter<ShopItemAdapter.ShopItemViewHolder>
     }
 
     override fun getItemCount(): Int {
-        return shopList.size
+        return currentList.size
     }
 
-    class ShopItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val name = itemView.findViewById<TextView>(R.id.tv_name)
-        val count = itemView.findViewById<TextView>(R.id.tv_count)
-    }
 
     companion object {
         const val VIEW_TYPE_ENABLED = 1

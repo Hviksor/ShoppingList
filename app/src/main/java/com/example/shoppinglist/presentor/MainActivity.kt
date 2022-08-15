@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
         initViews()
         itemContainer = findViewById(R.id.item_container)
         viewModel.shopList.observe(this) {
-            shopItemAdapter.shopList = it
+            shopItemAdapter.submitList(it)
         }
         buttonAdd.setOnClickListener {
             if (isOneLineViews()) {
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = shopItemAdapter.shopList[viewHolder.adapterPosition]
+                val item = shopItemAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.deleteShopItem(item)
             }
         }
