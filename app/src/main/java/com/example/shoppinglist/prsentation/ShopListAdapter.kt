@@ -2,13 +2,15 @@ package com.example.shoppinglist.prsentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.example.shoppinglist.R
+import com.example.shoppinglist.databinding.ItemShopDisabledBinding
+import com.example.shoppinglist.databinding.ItemShopEnabledBinding
 import com.example.shoppinglist.domain.ShopItem
 
-class ShopListAdapter : ListAdapter<ShopItem,ShopItemViewHolder>(ShopItemDiffCallBack()) {
-
-
+class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallBack()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         val layout = when (viewType) {
@@ -16,12 +18,14 @@ class ShopListAdapter : ListAdapter<ShopItem,ShopItemViewHolder>(ShopItemDiffCal
             LAYOUT_DISABLED -> R.layout.item_shop_disabled
             else -> throw RuntimeException("Неизвестный ViewType: $viewType")
         }
-        val view = LayoutInflater.from(parent.context).inflate(
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
             layout,
             parent,
             false
         )
-        return ShopItemViewHolder(view)
+
+        return ShopItemViewHolder(binding)
     }
 
     var onShopItemOnLongClick: ((ShopItem) -> Unit)? = null
@@ -32,16 +36,27 @@ class ShopListAdapter : ListAdapter<ShopItem,ShopItemViewHolder>(ShopItemDiffCal
         position: Int
     ) {
         val shopItem = getItem(position)
-        holder.tvName.text = shopItem.name
-        holder.tvCount.text = shopItem.count.toString()
-        holder.itemView.setOnLongClickListener {
+        val binding = holder.binding
+        when (binding) {
+            is ItemShopEnabledBinding -> {
+                binding.tvName.text = shopItem.name
+                binding.tvCount.text = shopItem.count.toString()
+            }
+            is ItemShopDisabledBinding -> {
+                binding.tvName.text = shopItem.name
+                binding.tvCount.text = shopItem.count.toString()
+            }
+        }
+
+        binding.root.setOnLongClickListener {
             onShopItemOnLongClick?.invoke(shopItem)
             true
         }
-        holder.itemView.setOnClickListener {
+        binding.root.setOnClickListener {
             onShopClick?.invoke(shopItem)
         }
     }
+
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
         return if (item.enabled) {
@@ -50,6 +65,7 @@ class ShopListAdapter : ListAdapter<ShopItem,ShopItemViewHolder>(ShopItemDiffCal
             LAYOUT_DISABLED
         }
     }
+
     companion object {
         const val LAYOUT_ENABLED = 1
         const val LAYOUT_DISABLED = 0
