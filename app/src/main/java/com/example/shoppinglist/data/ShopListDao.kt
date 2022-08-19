@@ -9,16 +9,17 @@ import androidx.room.Query
 @Dao
 interface ShopListDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addShopItem(shopItemDbModel: ShopItemDbModel)
 
     @Query("SELECT * FROM shop_item_table")
     fun getShopItemList(): LiveData<List<ShopItemDbModel>>
 
     @Query("SELECT * FROM shop_item_table WHERE id=:shopItemId")
-    fun getShopItem(shopItemId: Int): ShopItemDbModel
+    suspend fun getShopItem(shopItemId: Int): ShopItemDbModel
 
     @Query("DELETE FROM shop_item_table WHERE id=:shopItemId")
-    fun deleteShopItem(shopItemId: Int)
+    suspend fun deleteShopItem(shopItemId: Int)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addShopItem(shopItemDbModel: ShopItemDbModel)
 
 }

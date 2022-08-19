@@ -58,7 +58,7 @@ class ShopItemFragment() : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                inputLayoutName.error = null
+                viewModel.resetErrorName()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -69,7 +69,7 @@ class ShopItemFragment() : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                inputLayoutCount.error = null
+                viewModel.resetErrorCount()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -78,7 +78,6 @@ class ShopItemFragment() : Fragment() {
     }
 
     private fun setViewModelFun() = with(binding) {
-
         viewModel.errorInputName.observe(viewLifecycleOwner) {
             if (it) {
                 inputLayoutName.error = "Error"
