@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-
     <data>
-
         <variable
             name="shopItem"
             type="com.example.shoppinglist.domain.model.ShopItem" />
@@ -43,7 +41,7 @@
                 android:id="@+id/tv_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(shopItem.name)}"
+                android:text="@{String.valueOf(shopItem.count)}"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"

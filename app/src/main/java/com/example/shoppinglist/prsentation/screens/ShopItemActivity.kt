@@ -9,7 +9,7 @@ import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ActivityShopItemBinding
 import com.example.shoppinglist.domain.model.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(),ShopItemFragment.OnEditingFinishedListener {
     private var _binding: ActivityShopItemBinding? = null
     private val binding: ActivityShopItemBinding
         get() = _binding ?: throw RuntimeException("ActivityShopItemBinding=null")
@@ -83,7 +83,10 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
             return intent
         }
+    }
 
-
+    override fun onEditingFinished() {
+        Log.e("finished", "finished")
+        finish()
     }
 }

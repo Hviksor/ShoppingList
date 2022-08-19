@@ -1,8 +1,10 @@
 package com.example.shoppinglist.prsentation.screens
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,8 +25,16 @@ class ShopItemFragment() : Fragment() {
     private val binding: FragmentShopItemBinding
         get() = _binding ?: throw RuntimeException("FragmentShopItemBinding =null")
 
-    var onEditingFinishListener: OnEditingFinishedListener? = null
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        } else {
+            throw RuntimeException("Activity must implement OnEditingFinishedListener")
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,7 +56,7 @@ class ShopItemFragment() : Fragment() {
 
     private fun addViewModelFields() = with(binding) {
         shopItemViewModel?.isCloseScreen?.observe(viewLifecycleOwner) {
-            onEditingFinishListener?.onEditingFinished()
+            onEditingFinishedListener.onEditingFinished()
         }
     }
 
@@ -58,6 +68,7 @@ class ShopItemFragment() : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 shopItemViewModel?.resetErrorInputName()
             }
+
             override fun afterTextChanged(s: Editable?) {
             }
         })

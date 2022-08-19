@@ -7,6 +7,6 @@ data class ShopItem(
     var id: Int = DEFAULT_ID
 ) {
     companion object {
-        const val DEFAULT_ID = -1
+        const val DEFAULT_ID = 0
     }
 }

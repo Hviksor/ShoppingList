@@ -1,6 +1,7 @@
 package com.example.shoppinglist.prsentation.screens
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +19,7 @@ import com.example.shoppinglist.prsentation.ShopListAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
     private var _binding: ActivityMainBinding? = null
     private val binding: ActivityMainBinding
         get() = _binding ?: throw RuntimeException("ActivityMainBinding=null")
@@ -26,7 +27,6 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
     private lateinit var shopItemAdapter: ShopListAdapter
-    private var shopItemContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,20 +43,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             } else {
                 val fragment = ShopItemFragment.newInstanceAddItem()
-                fragment.onEditingFinishListener = object : ShopItemFragment.OnEditingFinishedListener {
-                    override fun onEditingFinished() {
-                        Toast.makeText(this@MainActivity, "succesc", Toast.LENGTH_SHORT).show()
-                        supportFragmentManager.popBackStack()
-                    }
-                }
                 launchFragment(fragment)
             }
         }
-    }
-
-    fun onEditingFinish() {
-        Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
-        supportFragmentManager.popBackStack()
     }
 
     private fun isOnePaneMode(): Boolean {
@@ -113,7 +102,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListener() {
-
         shopItemAdapter.onShopClick = {
             if (isOnePaneMode()) {
                 val intent = ShopItemActivity.getEditIntent(this, it.id)
@@ -122,9 +110,7 @@ class MainActivity : AppCompatActivity() {
                 launchFragment(ShopItemFragment.newInstanceEditItem(it.id))
             }
         }
-
     }
-
 
     private fun setupLongClickListener() {
         shopItemAdapter.onShopItemOnLongClick = {
@@ -135,6 +121,12 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    override fun onEditingFinished() {
+        Log.e("finished", "finished")
+        Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
     }
 
 
