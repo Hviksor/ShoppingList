@@ -1,6 +1,8 @@
 package com.example.shoppinglist.prsentation.viewModel
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,8 +12,8 @@ import com.example.shoppinglist.domain.useCase.EditShopItemUseCase
 import com.example.shoppinglist.domain.useCase.GetShopItemUseCase
 import com.example.shoppinglist.domain.model.ShopItem
 
-class ShopItemViewModel : ViewModel() {
-    private val repo = ShopListRepositoryImpl
+class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
+    private val repo = ShopListRepositoryImpl(application)
     private val getShopItemUseCase = GetShopItemUseCase(repo)
     private val editShopItemUseCase = EditShopItemUseCase(repo)
     private val addShopItemUseCase = AddShopItemUseCase(repo)
@@ -56,7 +58,7 @@ class ShopItemViewModel : ViewModel() {
         val name = parsName(inputName)
         val count = parsCount(inputCount)
         val fieldsValid = validateInput(name, count)
-        Log.e("fieldsValid",fieldsValid.toString())
+        Log.e("fieldsValid", fieldsValid.toString())
         if (fieldsValid) {
             val shopItem = ShopItem(name, count, true)
             addShopItemUseCase.addShopItem(shopItem)
